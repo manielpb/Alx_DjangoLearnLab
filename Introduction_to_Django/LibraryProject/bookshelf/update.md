@@ -1,5 +1,5 @@
-Book.objects.get(title="1984")
+book.objects.get(title="1984")
 
-Book.title = "Nineteen Eighty-Four"
-Book.save()
+book.title = "Nineteen Eighty-Four"
+book.save()
 
