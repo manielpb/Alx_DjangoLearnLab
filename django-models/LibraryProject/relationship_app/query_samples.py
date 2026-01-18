@@ -1,4 +1,4 @@
-from models import Author, Library
+from models import Author, Librarian, Library
 
 
 Library.objects.get(name=library_name)
@@ -6,3 +6,5 @@ books.all()
 
 Author.objects.get(name=author_name)
 objects.filter(author=author)
+
+Librarian.objects.get(library=)
