@@ -30,7 +30,7 @@ def register(request):
     return render(request, 'relationship_app/register.html', {'form': form})
 
 @login_required
-def admin_vview(request):
+def admin_view(request):
     if request.user.userprofile.role != 'Admin':
         return HttpResponseForbidden("You are not authorized to view this page.")
     return HttpResponse("Welcome Admin! You have full access.")
