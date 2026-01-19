@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import user
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -31,22 +31,20 @@ class Librarian(models.Model):
     def __str__(self):
         return self.name
     
-class UserProfile(models.Model):
-    ROLE_CHOICES = [
-        ('Admin', 'Admin'),
-        ('Librarian', 'Librarian'),
-        ('Member', 'Member'),
-    ]
 
-    user = models.OneToOneField(
-        user,
-        on_delete=models.CASCADE
-    )
+
+    
+class UserProfile(models.Model):
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     role = models.CharField(
         max_length=20,
-        choices=ROLE_CHOICES,
-        default='Member'
+        choices=[
+            ("Admin", "Admin"),
+            ("Librarian", "Librarian"),
+            ("Member", "Member"),
+        ]
     )
 
     def __str__(self):
