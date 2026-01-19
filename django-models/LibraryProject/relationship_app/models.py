@@ -31,7 +31,7 @@ class Librarian(models.Model):
     def __str__(self):
         return self.name
     
-class Userprofiles(models.Model):
+class UserProfiles(models.Model):
     ROLE_CHOICES = [
         ('Admin', 'Admin'),
         ('Librarian', 'Librarian'),
