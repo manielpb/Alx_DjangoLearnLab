@@ -57,3 +57,8 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return HttpResponse("Member Dashboard")
+
+@login_required
+@user_passes_test(admin_view)
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
