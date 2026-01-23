@@ -12,21 +12,28 @@ class Author(models.Model):
 
 class Book(models.Model):
     title = models.CharField(max_length=200)
-    author = models.ForeignKey(Author)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        permissions = (
+            ("Can_add_book", "Can add book"),
+            ("Can_change_book", "Can change book"),
+            ("Can_delete_book","Can delete book",)
+        )
 
 class Library(models.Model):
     name = models.CharField(max_length=200)
     books = models.ManyToManyField(Book)
 
     def __str__(self):
-        return self.namev
+        return self.name
 
 class Librarian(models.Model):
     name = models.CharField(max_length=200)
-    library = models.OneToOneField(Library)
+    library = models.OneToOneField(Library, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

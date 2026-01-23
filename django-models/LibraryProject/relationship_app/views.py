@@ -8,6 +8,7 @@ from django.contrib.auth import login
 from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import permission_required
 
 
 
@@ -62,3 +63,14 @@ def member_view(request):
 @user_passes_test(admin_view)
 def admin_view(request):
     return render(request, 'relationship_app/admin_view.html')
+
+@permission_required('relationship_app.add_book', raise_exception=True)
+def add_book(request):
+    pass
+
+@permission_required('relationship_app.change_book', raise_exception=True)
+def edit_book(request, pk):
+    pass
+
+@permission_required('relationship_app.delete_book', raise_exception=True)
+def delete_book(request, pk)
