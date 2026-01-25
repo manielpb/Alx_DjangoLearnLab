@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import permission_required
 from .models import Book
-from .forms import BookSearchForm
+from .forms import BookSearchForm, ExampleForm
 from django.db.models import Q
 
 # Create your views here.
