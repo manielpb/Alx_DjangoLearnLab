@@ -6,10 +6,10 @@ from django.contrib.auth.admin import UserAdmin
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):  # Must inherit admin.ModelAdmin
     # Columns to display
-    list_display = ('title', 'author', 'publication_year')
+    list_display = ('title', 'author', 'published_year')
 
     # Filters on the sidebar
-    list_filter = ('author', 'publication_year')
+    list_filter = ('author', 'published_year')
 
     # Search bar
     search_fields = ('title', 'author')
