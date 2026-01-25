@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import permission_required
 from .models import Book
-from .forms import BookSearchForm, ExampleForm
+from .forms import BookSearchForm
 from django.db.models import Q
+from .forms import ExampleForm
 
 # Create your views here.
 @permission_required('books.view_book', raise_exception=True)
