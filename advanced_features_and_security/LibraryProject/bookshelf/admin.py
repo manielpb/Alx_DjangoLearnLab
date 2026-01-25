@@ -33,3 +33,5 @@ class CustomUserAdmin(UserAdmin):
         "Profile Info", {"fields": ("date_of_birth", "profile_photo")}
     ),
     )
+
+    admin.site.register(CustomUser, CustomUserAdmin)
