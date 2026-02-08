@@ -22,6 +22,8 @@ class BookAPITests(APITestCase):
         User = get_user_model()
         self.user = User.objects.create_user(username="testuser", password="pass12345")
 
+        self.client.login(username="testuser", password="pass12345")
+
         # Create test data
         self.author1 = Author.objects.create(name="Author One")
         self.author2 = Author.objects.create(name="Author Two")
