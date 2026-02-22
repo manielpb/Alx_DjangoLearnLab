@@ -54,24 +54,21 @@ class LikePostView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Post.objects.all()
 
-    def post(self, request, post_id):
-        post = get_object_or_404(Post, id=post_id)
-        user = request.user
+    def post(self, request, pk):
+        post = generics.get_object_or_404(Post, pk=pk)
 
-        # Prevent liking same post multiple times
-        if Like.objects.filter(user=user, post=post).exists():
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        if not created:
             return Response(
                 {"detail": "You already liked this post."},
                 status=status.HTTP_200_OK,
             )
 
-        Like.objects.create(user=user, post=post)
-
-        # Create notification for post author (if not liking own post)
-        if post.author != user:
+        # Create notification (don't notify if user likes their own post)
+        if post.author != request.user:
             Notification.objects.create(
                 recipient=post.author,
-                actor=user,
+                actor=request.user,
                 verb="liked your post",
                 target=post,
             )
@@ -83,11 +80,10 @@ class UnlikePostView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Post.objects.all()
 
-    def post(self, request, post_id):
-        post = get_object_or_404(Post, id=post_id)
-        user = request.user
+    def post(self, request, pk):
+        post = generics.get_object_or_404(Post, pk=pk)
 
-        like = Like.objects.filter(user=user, post=post).first()
+        like = Like.objects.filter(user=request.user, post=post).first()
         if not like:
             return Response(
                 {"detail": "You have not liked this post."},
@@ -95,15 +91,5 @@ class UnlikePostView(generics.GenericAPIView):
             )
 
         like.delete()
-
-        # Optional: remove the like notification (if you want)
-        # If you keep notifications forever, remove this block.
-        Notification.objects.filter(
-            recipient=post.author,
-            actor=user,
-            verb="liked your post",
-            target_object_id=post.id,
-            target_content_type__model="post",
-        ).delete()
 
         return Response({"detail": "Post unliked."}, status=status.HTTP_200_OK)
