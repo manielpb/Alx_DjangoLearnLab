@@ -89,11 +89,11 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 class FollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
 
     def post(self, request, user_id):
         me = request.user
-        target = get_object_or_404(CustomUser, id=user_id)
+        target = get_object_or_404(User, id=user_id)
 
         if target == me:
             return Response(
@@ -116,11 +116,11 @@ class FollowUserView(generics.GenericAPIView):
 
 class UnfollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
 
     def post(self, request, user_id):
         me = request.user
-        target = get_object_or_404(CustomUser, id=user_id)
+        target = get_object_or_404(User, id=user_id)
 
         if target == me:
             return Response(
