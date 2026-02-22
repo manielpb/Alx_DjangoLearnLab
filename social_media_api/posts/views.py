@@ -1,11 +1,12 @@
-from django.shortcuts import render
-from rest_framework import viewsets
+from django.shortcuts import render, get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from notifications.models import Notification
 
 # Create your views here.
 class PostViewSet(viewsets.ModelViewSet):
@@ -48,3 +49,61 @@ class FeedView(generics.ListAPIView):
     def get_queryset(self):
         following_users = self.request.user.following.all()
         return Post.objects.filter(author__in=following_users).order_by("-created_at")
+
+class LikePostView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Post.objects.all()
+
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        user = request.user
+
+        # Prevent liking same post multiple times
+        if Like.objects.filter(user=user, post=post).exists():
+            return Response(
+                {"detail": "You already liked this post."},
+                status=status.HTTP_200_OK,
+            )
+
+        Like.objects.create(user=user, post=post)
+
+        # Create notification for post author (if not liking own post)
+        if post.author != user:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=user,
+                verb="liked your post",
+                target=post,
+            )
+
+        return Response({"detail": "Post liked."}, status=status.HTTP_201_CREATED)
+
+
+class UnlikePostView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Post.objects.all()
+
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        user = request.user
+
+        like = Like.objects.filter(user=user, post=post).first()
+        if not like:
+            return Response(
+                {"detail": "You have not liked this post."},
+                status=status.HTTP_200_OK,
+            )
+
+        like.delete()
+
+        # Optional: remove the like notification (if you want)
+        # If you keep notifications forever, remove this block.
+        Notification.objects.filter(
+            recipient=post.author,
+            actor=user,
+            verb="liked your post",
+            target_object_id=post.id,
+            target_content_type__model="post",
+        ).delete()
+
+        return Response({"detail": "Post unliked."}, status=status.HTTP_200_OK)

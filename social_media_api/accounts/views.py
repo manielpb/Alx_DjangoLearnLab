@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from .serializers import RegisterSerializer, UserSerializer, LoginSerializer
 from .models import User
+from notifications.utils import create_notification
 
 # Create your views here.
 class RegisterView(APIView):
@@ -139,3 +140,27 @@ class UnfollowUserView(generics.GenericAPIView):
             {"detail": f"You unfollowed {target.username}."},
             status=status.HTTP_200_OK,
         )
+    
+
+create_notification(
+    recipient=target,
+    actor=me,
+    verb="started following you",
+    target=None
+)
+
+create_notification(
+    recipient=post.author,
+    actor=user,
+    verb="liked your post",
+    target=post
+)
+
+def perform_create(self, serializer):
+    comment = serializer.save(author=self.request.user)
+    create_notification(
+        recipient=comment.post.author,
+        actor=self.request.user,
+        verb="commented on your post",
+        target=comment.post
+    )
