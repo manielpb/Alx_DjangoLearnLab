@@ -87,7 +87,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
                         status=status.HTTP_200_OK)
     
 
-    class FollowUserView(generics.GenericAPIView):
+class FollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = CustomUser.objects.all()
 
